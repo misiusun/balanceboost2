@@ -1,0 +1,123 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BalanceBoost - Równowaga dla sukcesu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="https://via.placeholder.com/50/3A5199/FFFFFF?text=B" alt="BalanceBoost Logo">
+            <h1>BalanceBoost</h1>
+        </div>
+        <nav>
+            <a href="#mission">Misja</a>
+            <a href="#values">Wartości</a>
+            <a href="#offer">Oferta</a>
+            <a href="#why">Dlaczego my?</a>
+            <a href="#contact">Kontakt</a>
+        </nav>
+    </header>
+
+    <section id="mission">
+        <h2>Nasza Misja</h2>
+        <p>W BalanceBoost wierzymy, że prawdziwy sukces zawodowy jest możliwy tylko wtedy, gdy dbamy o swój dobrostan psychofizyczny. Naszą misją jest pomaganie zapracowanym profesjonalistom w osiąganiu równowagi i wydajności poprzez spersonalizowane, oparte na nauce programy, które dopasowują się do ich napiętego harmonogramu.</p>
+    </section>
+
+    <section id="values">
+        <h2>Nasze Wartości</h2>
+        <ul>
+            <li><strong>Efektywność</strong>: Maksymalne rezultaty przy minimalnym nakładzie czasu.</li>
+            <li><strong>Personalizacja</strong>: Rozwiązania dopasowane do indywidualnych potrzeb.</li>
+            <li><strong>Naukowość</strong>: Programy oparte na badaniach i dowodach naukowych.</li>
+            <li><strong>Integralność</strong>: Holistyczne podejście łączące aspekty fizyczne i mentalne.</li>
+            <li><strong>Dostępność</strong>: Rozwiązania dla każdego, niezależnie od poziomu zaawansowania.</li>
+            <li><strong>Dyskrecja</strong>: Poszanowanie prywatności i indywidualnych preferencji.</li>
+        </ul>
+    </section>
+
+    <section id="offer">
+        <h2>Nasza Oferta</h2>
+        <p>BalanceBoost to platforma oferująca personalizowane programy dobrostanu psychofizycznego dla zapracowanych profesjonalistów.</p>
+        <div class="offer-grid">
+            <div class="offer-item">
+                <h3>BalanceBoost Essential</h3>
+                <p>Miesięczna subskrypcja obejmująca spersonalizowany program treningowo-rozwojowy z mikro-interwencjami, nagraniami wideo i audio oraz systemem śledzenia postępów.</p>
+            </div>
+            <div class="offer-item">
+                <h3>BalanceBoost Starter Guide</h3>
+                <p>E-book wprowadzający do równowagi psychofizycznej, z przewodnikiem PDF, ćwiczeniami fizycznymi, praktykami mentalnymi i arkuszem samooceny.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="why">
+        <h2>Dlaczego BalanceBoost?</h2>
+        <ul>
+            <li><strong>Oszczędzasz czas</strong>: Nie musisz samodzielnie planować aktywności.</li>
+            <li><strong>Zyskujesz efektywność</strong>: Maksymalne rezultaty przy minimalnym nakładzie.</li>
+            <li><strong>Redukujesz stres</strong>: Eliminujesz poczucie winy związane z brakiem konsekwencji.</li>
+            <li><strong>Poprawiasz wydajność</strong>: Lepszy dobrostan to wyższa efektywność w pracy.</li>
+            <li><strong>Osiągasz równowagę</strong>: Harmonia między życiem zawodowym a osobistym.</li>
+            <li><strong>Widzisz rezultaty</strong>: Śledzisz postępy i obserwujesz mierzalne efekty.</li>
+        </ul>
+    </section>
+
+    <section id="contact">
+        <h2>Skontaktuj się z nami</h2>
+        <p>Twoja kariera. Twoje zdrowie. Twoja równowaga. Zacznij już dziś!</p>
+        <form>
+            <input type="text" placeholder="Imię" required>
+            <input type="email" placeholder="E-mail" required>
+            <textarea placeholder="Wiadomość" required></textarea>
+            <button type="submit">Wyślij</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>© 2025 BalanceBoost. Wszystkie prawa zastrzeżone.</p>
+    </footer>
+</body>
+</html>
